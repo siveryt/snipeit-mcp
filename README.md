@@ -272,15 +272,19 @@ Comprehensive consumable management with CRUD operations.
 }
 ```
 
-## Integration with MCP Clients
+## Integration with LLM Clients
+
+This MCP server can be integrated with any MCP-compatible LLM client. Below are detailed configuration examples for popular clients.
 
 ### Claude Desktop
 
-Add this configuration to your Claude Desktop config file:
+Claude Desktop by Anthropic provides native MCP support.
 
-**Location:**
+**Configuration File Location:**
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**Option 1: Using UV (Recommended)**
 
 ```json
 {
@@ -289,7 +293,7 @@ Add this configuration to your Claude Desktop config file:
       "command": "uv",
       "args": [
         "--directory",
-        "/path/to/snipeit-mcp",
+        "/Users/work/Documents/Projects/inventory/snipeit-mcp",
         "run",
         "python",
         "server.py"
@@ -303,16 +307,15 @@ Add this configuration to your Claude Desktop config file:
 }
 ```
 
-### Cursor
-
-Add this to your Cursor MCP settings:
+**Option 2: Using Python directly**
 
 ```json
 {
   "mcpServers": {
     "snipeit": {
-      "command": "python",
-      "args": ["/path/to/snipeit-mcp/server.py"],
+      "command": "/Users/work/Documents/Projects/inventory/snipeit-mcp/.venv/bin/python",
+      "args": ["server.py"],
+      "cwd": "/Users/work/Documents/Projects/inventory/snipeit-mcp",
       "env": {
         "SNIPEIT_URL": "https://your-snipeit-instance.com",
         "SNIPEIT_TOKEN": "your-api-token-here"
@@ -321,6 +324,190 @@ Add this to your Cursor MCP settings:
   }
 }
 ```
+
+**After adding the configuration:**
+1. Save the file
+2. Restart Claude Desktop
+3. Look for the 🔌 icon indicating MCP servers are connected
+4. You can now ask Claude to manage your Snipe-IT inventory!
+
+**Example prompts to try:**
+- "List all assets in the inventory"
+- "Create a new laptop asset with tag LAP-100"
+- "Check out asset LAP-001 to user ID 5"
+- "Show me all consumables with low stock"
+
+### Cursor
+
+Cursor IDE supports MCP servers for code-aware AI assistance.
+
+**Configuration File Location:**
+- macOS: `~/.cursor/config/mcp.json` or via Settings → MCP Servers
+- Windows: `%USERPROFILE%\.cursor\config\mcp.json`
+
+**Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "snipeit": {
+      "command": "/Users/work/Documents/Projects/inventory/snipeit-mcp/.venv/bin/python",
+      "args": ["/Users/work/Documents/Projects/inventory/snipeit-mcp/server.py"],
+      "env": {
+        "SNIPEIT_URL": "https://your-snipeit-instance.com",
+        "SNIPEIT_TOKEN": "your-api-token-here"
+      }
+    }
+  }
+}
+```
+
+### Cline (VS Code Extension)
+
+Cline is a VS Code extension that supports MCP.
+
+**Configuration File Location:**
+- macOS/Linux: `~/.config/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
+- Windows: `%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
+
+**Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "snipeit": {
+      "command": "python",
+      "args": ["/Users/work/Documents/Projects/inventory/snipeit-mcp/server.py"],
+      "env": {
+        "SNIPEIT_URL": "https://your-snipeit-instance.com",
+        "SNIPEIT_TOKEN": "your-api-token-here"
+      }
+    }
+  }
+}
+```
+
+### Continue.dev (VS Code/JetBrains Extension)
+
+Continue.dev provides MCP support in both VS Code and JetBrains IDEs.
+
+**Configuration File Location:**
+- VS Code: `~/.continue/config.json`
+- JetBrains: `~/.continue/config.json`
+
+**Configuration:**
+
+```json
+{
+  "mcpServers": [
+    {
+      "name": "snipeit",
+      "command": "python",
+      "args": ["/Users/work/Documents/Projects/inventory/snipeit-mcp/server.py"],
+      "env": {
+        "SNIPEIT_URL": "https://your-snipeit-instance.com",
+        "SNIPEIT_TOKEN": "your-api-token-here"
+      }
+    }
+  ]
+}
+```
+
+### Zed Editor
+
+Zed editor has experimental MCP support.
+
+**Configuration File Location:**
+- `~/.config/zed/settings.json`
+
+**Configuration:**
+
+```json
+{
+  "context_servers": {
+    "snipeit": {
+      "command": "/Users/work/Documents/Projects/inventory/snipeit-mcp/.venv/bin/python",
+      "args": ["server.py"],
+      "cwd": "/Users/work/Documents/Projects/inventory/snipeit-mcp",
+      "env": {
+        "SNIPEIT_URL": "https://your-snipeit-instance.com",
+        "SNIPEIT_TOKEN": "your-api-token-here"
+      }
+    }
+  }
+}
+```
+
+### Generic MCP Client Configuration
+
+For any other MCP-compatible client, use this general pattern:
+
+```json
+{
+  "mcpServers": {
+    "snipeit": {
+      "command": "<path-to-python>",
+      "args": ["<path-to-server.py>"],
+      "env": {
+        "SNIPEIT_URL": "https://your-snipeit-instance.com",
+        "SNIPEIT_TOKEN": "your-api-token-here"
+      }
+    }
+  }
+}
+```
+
+**Replace:**
+- `<path-to-python>`: Full path to Python executable (e.g., `/Users/work/Documents/Projects/inventory/snipeit-mcp/.venv/bin/python`)
+- `<path-to-server.py>`: Full path to `server.py` (e.g., `/Users/work/Documents/Projects/inventory/snipeit-mcp/server.py`)
+
+### Testing Your Configuration
+
+After configuring your LLM client:
+
+1. **Restart the client** to load the new MCP server configuration
+
+2. **Verify connection** - Look for indicators that the MCP server is connected:
+   - Claude Desktop: 🔌 icon in the interface
+   - Other clients: Check logs or status indicators
+
+3. **Test with a simple query**:
+   ```
+   "List all assets in my Snipe-IT inventory"
+   ```
+
+4. **Check for errors** - If the server fails to connect:
+   - Verify the paths are correct (no typos)
+   - Ensure environment variables are set correctly
+   - Check that the virtual environment exists
+   - Review client logs for error messages
+
+### Environment Variable Security
+
+**Important Security Notes:**
+
+1. **Never commit credentials** - The `.gitignore` file already excludes `.env` files
+
+2. **Use environment variables** - Instead of hardcoding in JSON:
+
+   ```json
+   {
+     "mcpServers": {
+       "snipeit": {
+         "command": "python",
+         "args": ["server.py"],
+         "env": {
+           "SNIPEIT_URL": "${SNIPEIT_URL}",
+           "SNIPEIT_TOKEN": "${SNIPEIT_TOKEN}"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Restrict token permissions** - Create API tokens in Snipe-IT with only the permissions needed
+
+4. **Rotate tokens regularly** - Update your API tokens periodically for security
 
 ## Architecture
 
